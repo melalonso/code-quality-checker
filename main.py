@@ -37,14 +37,34 @@ def init_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def deep_bugs_example():
+    import os
+    import json
+    import numpy as np
+    from keras.models import Sequential
+    from keras.layers.core import Dense, Dropout
+
+    calls = []
+    for file in os.listdir("DeepBugs_data/calls"):
+        with open(os.path.join("DeepBugs_data/calls", file)) as fp:
+            calls.extend(json.load(fp))
+
+    print(f"Have read {len(calls)} function calls")
+    print(calls[28000])
+
+
 if __name__ == '__main__':
     # parser = init_parser()
     # args = parser.parse_args()
     print(" Code Quality Checker ".center(40, "-"))
     model = None
-    my_sum = 0
-    for i in tqdm(range(100000)):
-        my_sum += i
-        time.sleep(0.00005)
-    print(my_sum)
+
+    deep_bugs_example()
+
+    # my_sum = 0
+    # for i in tqdm(range(100000)):
+    #     my_sum += i
+    #     time.sleep(0.00005)
+    # print(my_sum)
+
 
