@@ -99,7 +99,7 @@ For example if we consider:
 
 We have 5 rules, and can give the same importance to all of them (20%). Then let's say we want to decrease the legibility by 20% with each violation.
 So, for a class violating `TooManyFields` and `ShortClassName` it'd be a 40% decrease resulting in an 'Overall Legibility' of 60%. 
-We can then use human validation to review that the aggregated score the classes make sense. And continue to the Corpus division for the training and generation of the model. 
+We can then use human validation to review that the aggregated score for the classes make sense. Continue to the Corpus division for the training and generation of the model. 
 
 
      
