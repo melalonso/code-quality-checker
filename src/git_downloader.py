@@ -1,20 +1,23 @@
 import os
 
 import git
+import yaml
 
 
 class GitDownloader:
-    _target_folder = '/Users/melvin.elizondo/Documents/repos'
+    with open("config/config.yml", "r") as ymlfile:
+        cfg = yaml.load(ymlfile)['git_downloader']
 
     @staticmethod
     def download_project(name, url):
-        if not os.path.exists(GitDownloader._target_folder):
-            os.mkdir(GitDownloader._target_folder)
+        target_folder = GitDownloader.cfg['target_folder']
+        if not os.path.exists(target_folder):
+            os.mkdir(target_folder)
 
-        target_path = f"{GitDownloader._target_folder}/{name}"
+        target_path = f"{target_folder}/{name}"
         if os.path.exists(target_path):
             print(f"Repository {name} already exists. NOT cloning...")
         else:
-            git.Git(GitDownloader._target_folder).clone(url)
+            git.Git(target_folder).clone(url)
             print(f'Successfully cloned {target_path}')
         return target_path

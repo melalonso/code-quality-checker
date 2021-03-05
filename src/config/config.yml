@@ -1,0 +1,15 @@
+pmd:
+  base_command: '/Users/melvin.elizondo/pmd-bin-6.24.0/bin/run.sh pmd'
+  output_format: 'csv'
+  rule_sets: '/Users/melvin.elizondo/Documents/UNIVERSIDAD/TESIS/code-quality-checker/PMD/my_ruleset.xml'
+  language: 'java'
+  version: 8
+  report_file_path: '/Users/melvin.elizondo/Documents/tesis/pmd'
+git_downloader:
+  target_folder: '/Users/melvin.elizondo/Documents/tesis/repos'
+other:
+  preprocessing_queue:
+    - preprocessing.scale_and_center
+    - preprocessing.dot_reduction
+    - preprocessing.connect_lines
+  use_anonymous: yes
