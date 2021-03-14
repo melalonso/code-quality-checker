@@ -5,8 +5,8 @@ import yaml
 
 
 class GitDownloader:
-    with open("config/config.yml", "r") as ymlfile:
-        cfg = yaml.load(ymlfile)['git_downloader']
+    with open("config/config.yml", "r") as yml_file:
+        cfg = yaml.load(yml_file, Loader=yaml.FullLoader)['git_downloader']
 
     @staticmethod
     def download_project(name, url):
@@ -18,6 +18,7 @@ class GitDownloader:
         if os.path.exists(target_path):
             print(f"Repository {name} already exists. NOT cloning...")
         else:
+            print(f'Cloning {target_path}', end='...')
             git.Git(target_folder).clone(url)
-            print(f'Successfully cloned {target_path}')
+            print('SUCCESS')
         return target_path

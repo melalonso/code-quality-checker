@@ -17,5 +17,9 @@
     <rule ref="category/java/design.xml/TooManyFields" />
     <rule ref="category/java/design.xml/TooManyMethods" />
 
+    <!--
+        TODO: Include all the rules that will be evaluated
+    -->
+
 
 </ruleset>

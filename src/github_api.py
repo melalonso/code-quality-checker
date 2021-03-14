@@ -30,7 +30,7 @@ class GithubApi:
         return 'https://api.github.com'
 
     @staticmethod
-    def get_repositories(page_number, results_per_page=5, sort_criteria='stars', order='desc', lang='java'):
+    def get_popular_repositories(page_number, results_per_page=5, sort_criteria='stars', order='desc', lang='java'):
         """
         Searches and returns the repositories based on the search criteria
         """
