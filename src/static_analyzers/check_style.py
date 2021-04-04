@@ -27,7 +27,7 @@ class CheckStyle:
 
         report_file = f'{report_path}/results_{project_name}'
         report_file_with_orig_ext = f"{report_file}.{output_format}"
-        if not os.path.exists(report_file):
+        if not os.path.exists(report_file_with_orig_ext):
             command = f'{CheckStyle.cfg["base_command"]} -c {CheckStyle.cfg["checks_file"]} ' \
                       f'-f {output_format} -o {report_file_with_orig_ext} {directory}'
 
