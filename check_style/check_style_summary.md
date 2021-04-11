@@ -16,7 +16,7 @@ For example, you can check for unnecessary modifiers on Java sources with -R cat
 -f format
 ```
 
-Specifies the output format. Valid values: xml, plain for XMLLogger and DefaultLogger respectively. Defaults to plain.
+Specifies the output format. Valid values: xml, plain, for XMLLogger and DefaultLogger respectively. Defaults to plain.
 
 ##### Plain
 ```

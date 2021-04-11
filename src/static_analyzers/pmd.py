@@ -2,13 +2,16 @@ import os
 
 import yaml
 
+from src.utils.decorators import timed
+
 
 class Pmd:
     with open("config/config.yml", "r") as yml_file:
         cfg = yaml.load(yml_file, Loader=yaml.FullLoader)['pmd']
 
     @staticmethod
-    def analyze(project_name, directory):
+    @timed
+    def pmd_analyze(project_name, directory):
         output_format = Pmd.cfg["output_format"]
         report_path = Pmd.cfg["report_file_path"]
 

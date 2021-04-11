@@ -6,7 +6,7 @@ class TimerError(Exception):
 
 
 class Timer:
-    def __init__(self, text="Elapsed time: {:0.4f} seconds", logger=print):
+    def __init__(self, text="=> Elapsed time: [{duration:0.4f}] seconds for [{method_name}]", logger=print):
         self._start_time = None
         self.text = text
         self.logger = logger
@@ -18,7 +18,7 @@ class Timer:
 
         self._start_time = time.perf_counter()
 
-    def stop(self):
+    def stop(self, method_name):
         """Stop the timer, and report the elapsed time"""
         if self._start_time is None:
             raise TimerError(f"Timer is not running. Use .start() to start it")
@@ -27,6 +27,6 @@ class Timer:
         self._start_time = None
 
         if self.logger:
-            self.logger(self.text.format(elapsed_time))
+            self.logger(self.text.format(duration=elapsed_time, method_name=method_name))
 
         return elapsed_time

@@ -4,6 +4,8 @@ import os
 import xmltodict
 import yaml
 
+from src.utils.decorators import timed
+
 
 class CheckStyle:
     with open("config/config.yml", "r") as yml_file:
@@ -18,7 +20,8 @@ class CheckStyle:
                 json_file.write(obj)
 
     @staticmethod
-    def analyze(project_name, directory):
+    @timed
+    def cs_analyze(project_name, directory):
         output_format = CheckStyle.cfg["output_format"]
         report_path = CheckStyle.cfg["report_file_path"]
 
@@ -32,7 +35,7 @@ class CheckStyle:
                       f'-f {output_format} -o {report_file_with_orig_ext} {directory}'
 
             os.system(command)
-            CheckStyle._write_json_file(report_file_with_orig_ext, report_file)
+            # CheckStyle._write_json_file(report_file_with_orig_ext, report_file)
             print("\tCheckStyle DONE")
         else:
             print("\tAlready CheckStyle analyzed")
