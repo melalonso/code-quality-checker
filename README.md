@@ -60,7 +60,6 @@ PoC for a Java code quality checker using ML4SC and PMD and CheckStyle rules and
         1. ExcessivePublicCount (default 45) (L)
         1. GodClass?
         1. LogicInversion: Use opposite operator instead of negating the whole expression with a logic complement operator.
-        1. NcssCount
         1. SimplifiedTernary: Look for ternary operators with the form condition ? literalBoolean : foo or condition ? foo : literalBoolean.
         1. SimplifyBooleanExpressions (G)
         1. SimplifyBooleanReturns (F)

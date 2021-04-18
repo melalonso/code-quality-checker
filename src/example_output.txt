@@ -1,0 +1,169 @@
+/usr/local/bin/python3.7 /Users/melvin.elizondo/Documents/UNIVERSIDAD/TESIS/code-quality-checker/src/main.py
+#################### PREPROCESS: Starting to get repositories from GitHub APIs #####################
+
+===================== Got page [1] of [1] with 5 RPP each ======================
+
+Repository CS-Notes already exists. NOT cloning...
+Analyzing /Users/melvin.elizondo/Documents/tesis/repos/CS-Notes...
+	Already PMD analyzed
+=> Elapsed time: [0.0000] seconds for [pmd_analyze]
+	Already CheckStyle analyzed
+=> Elapsed time: [0.0000] seconds for [cs_analyze]
+=> Elapsed time: [0.0002] seconds for [download_and_analyze]
+----------------------------------------------------------------------
+Repository JavaGuide already exists. NOT cloning...
+Analyzing /Users/melvin.elizondo/Documents/tesis/repos/JavaGuide...
+	Already PMD analyzed
+=> Elapsed time: [0.0000] seconds for [pmd_analyze]
+	Already CheckStyle analyzed
+=> Elapsed time: [0.0000] seconds for [cs_analyze]
+=> Elapsed time: [0.0001] seconds for [download_and_analyze]
+----------------------------------------------------------------------
+Repository java-design-patterns already exists. NOT cloning...
+Analyzing /Users/melvin.elizondo/Documents/tesis/repos/java-design-patterns...
+	Already PMD analyzed
+=> Elapsed time: [0.0000] seconds for [pmd_analyze]
+	Already CheckStyle analyzed
+=> Elapsed time: [0.0000] seconds for [cs_analyze]
+=> Elapsed time: [0.0001] seconds for [download_and_analyze]
+----------------------------------------------------------------------
+Cloning /Users/melvin.elizondo/Documents/tesis/repos/LeetCodeAnimation...SUCCESS
+Analyzing /Users/melvin.elizondo/Documents/tesis/repos/LeetCodeAnimation...
+	PMD DONE
+=> Elapsed time: [1.0646] seconds for [pmd_analyze]
+	CheckStyle DONE
+=> Elapsed time: [1.0716] seconds for [cs_analyze]
+=> Elapsed time: [56.5818] seconds for [download_and_analyze]
+----------------------------------------------------------------------
+Cloning /Users/melvin.elizondo/Documents/tesis/repos/spring-boot...SUCCESS
+Analyzing /Users/melvin.elizondo/Documents/tesis/repos/spring-boot...
+	PMD DONE
+=> Elapsed time: [32.9779] seconds for [pmd_analyze]
+	CheckStyle DONE
+=> Elapsed time: [25.3894] seconds for [cs_analyze]
+=> Elapsed time: [77.6590] seconds for [download_and_analyze]
+----------------------------------------------------------------------
+
+
+################# POSTPROCESS: Starting to process results from PMD and CheckStyle #################
+
+---------------------- Postprocessing CS-Notes with [PMD] ----------------------
+DONE
+
+--------------------- Postprocessing JavaGuide with [PMD] ----------------------
+DONE
+
+---------------- Postprocessing java-design-patterns with [PMD] ----------------
+Training Rule=[ShortClassName] Violate=[185] NotViolate=[167]
+Training Rule=[ShortVariable] Violate=[178] NotViolate=[174]
+Training Rule=[ShortMethodName] Violate=[10] NotViolate=[342]
+Training Rule=[TooManyMethods] Violate=[8] NotViolate=[344]
+DONE
+
+----------------- Postprocessing LeetCodeAnimation with [PMD] ------------------
+Training Rule=[ShortVariable] Violate=[8] NotViolate=[0]
+DONE
+
+-------------------- Postprocessing spring-boot with [PMD] ---------------------
+Training Rule=[TooManyMethods] Violate=[390] NotViolate=[477]
+Training Rule=[ShortVariable] Violate=[447] NotViolate=[420]
+Training Rule=[ShortMethodName] Violate=[77] NotViolate=[790]
+Training Rule=[ShortClassName] Violate=[101] NotViolate=[766]
+Training Rule=[TooManyFields] Violate=[16] NotViolate=[851]
+DONE
+=> Elapsed time: [0.2355] seconds for [postprocess_pmd]
+
+------------------ Postprocessing CS-Notes with [CheckStyle] -------------------
+No lines to process!
+=> Elapsed time: [0.0037] seconds for [generate_df_from_plain_file]
+DONE
+
+------------------ Postprocessing JavaGuide with [CheckStyle] ------------------
+No lines to process!
+=> Elapsed time: [0.0023] seconds for [generate_df_from_plain_file]
+DONE
+
+------------ Postprocessing java-design-patterns with [CheckStyle] -------------
+=> Elapsed time: [1.8192] seconds for [generate_df_from_plain_file]
+Training Rule=[CustomImportOrder] Violate=[153] NotViolate=[308]
+Training Rule=[AvoidStarImport] Violate=[9] NotViolate=[452]
+Training Rule=[RequireEmptyLineBeforeBlockTagGroup] Violate=[28] NotViolate=[433]
+Training Rule=[NonEmptyAtclauseDescription] Violate=[2] NotViolate=[459]
+Training Rule=[MissingJavadocType] Violate=[38] NotViolate=[423]
+Training Rule=[SummaryJavadoc] Violate=[305] NotViolate=[156]
+Training Rule=[MethodName] Violate=[1] NotViolate=[460]
+Training Rule=[AbbreviationAsWordInName] Violate=[20] NotViolate=[441]
+Training Rule=[JavadocParagraph] Violate=[54] NotViolate=[407]
+Training Rule=[LineLength] Violate=[47] NotViolate=[414]
+Training Rule=[SeparatorWrapComma] Violate=[2] NotViolate=[459]
+Training Rule=[EmptyLineSeparator] Violate=[2] NotViolate=[459]
+Training Rule=[OneStatementPerLine] Violate=[1] NotViolate=[460]
+Training Rule=[VariableDeclarationUsageDistance] Violate=[6] NotViolate=[455]
+Training Rule=[WhitespaceAfter] Violate=[7] NotViolate=[454]
+Training Rule=[WhitespaceAround] Violate=[3] NotViolate=[458]
+Training Rule=[Indentation] Violate=[8] NotViolate=[453]
+Training Rule=[InvalidJavadocPosition] Violate=[1] NotViolate=[460]
+Training Rule=[LocalVariableName] Violate=[3] NotViolate=[458]
+Training Rule=[OperatorWrap] Violate=[1] NotViolate=[460]
+Training Rule=[MissingJavadocMethod] Violate=[7] NotViolate=[454]
+Training Rule=[FileTabCharacter] Violate=[5] NotViolate=[456]
+Training Rule=[NeedBraces] Violate=[2] NotViolate=[459]
+Training Rule=[ArrayTypeStyle] Violate=[1] NotViolate=[460]
+Training Rule=[ParenPad] Violate=[2] NotViolate=[459]
+DONE
+
+-------------- Postprocessing LeetCodeAnimation with [CheckStyle] --------------
+=> Elapsed time: [0.4357] seconds for [generate_df_from_plain_file]
+Training Rule=[MissingJavadocType] Violate=[1] NotViolate=[10]
+Training Rule=[OuterTypeFilename] Violate=[11] NotViolate=[0]
+Training Rule=[MissingJavadocMethod] Violate=[1] NotViolate=[10]
+Training Rule=[WhitespaceAround] Violate=[10] NotViolate=[1]
+Training Rule=[Indentation] Violate=[10] NotViolate=[1]
+Training Rule=[ParameterName] Violate=[1] NotViolate=[10]
+Training Rule=[LocalVariableName] Violate=[3] NotViolate=[8]
+Training Rule=[NeedBraces] Violate=[1] NotViolate=[10]
+Training Rule=[RightCurlySame] Violate=[2] NotViolate=[9]
+Training Rule=[WhitespaceAfter] Violate=[5] NotViolate=[6]
+Training Rule=[FileTabCharacter] Violate=[2] NotViolate=[9]
+Training Rule=[MemberName] Violate=[1] NotViolate=[10]
+DONE
+
+----------------- Postprocessing spring-boot with [CheckStyle] -----------------
+=> Elapsed time: [14904.9851] seconds for [generate_df_from_plain_file]
+Training Rule=[FileTabCharacter] Violate=[5178] NotViolate=[128]
+Training Rule=[Indentation] Violate=[5121] NotViolate=[185]
+Training Rule=[LineLength] Violate=[3568] NotViolate=[1738]
+Training Rule=[CustomImportOrder] Violate=[3906] NotViolate=[1400]
+Training Rule=[RightCurlySame] Violate=[799] NotViolate=[4507]
+Training Rule=[AbbreviationAsWordInName] Violate=[313] NotViolate=[4993]
+Training Rule=[MissingJavadocType] Violate=[672] NotViolate=[4634]
+Training Rule=[MissingJavadocMethod] Violate=[477] NotViolate=[4829]
+Training Rule=[WhitespaceAfter] Violate=[1] NotViolate=[5305]
+Training Rule=[WhitespaceAround] Violate=[17] NotViolate=[5289]
+Training Rule=[VariableDeclarationUsageDistance] Violate=[66] NotViolate=[5240]
+Training Rule=[EmptyCatchBlock] Violate=[44] NotViolate=[5262]
+Training Rule=[MemberName] Violate=[19] NotViolate=[5287]
+Training Rule=[MethodName] Violate=[33] NotViolate=[5273]
+Training Rule=[SummaryJavadoc] Violate=[119] NotViolate=[5187]
+Training Rule=[RequireEmptyLineBeforeBlockTagGroup] Violate=[1074] NotViolate=[4232]
+Training Rule=[LocalVariableName] Violate=[12] NotViolate=[5294]
+Training Rule=[ArrayTypeStyle] Violate=[1] NotViolate=[5305]
+Training Rule=[AtclauseOrder] Violate=[1] NotViolate=[5305]
+Training Rule=[RightCurlyAlone] Violate=[1] NotViolate=[5305]
+Training Rule=[EmptyLineSeparator] Violate=[16] NotViolate=[5290]
+Training Rule=[AvoidEscapedUnicodeCharacters] Violate=[8] NotViolate=[5298]
+Training Rule=[JavadocParagraph] Violate=[232] NotViolate=[5074]
+Training Rule=[JavadocTagContinuationIndentation] Violate=[231] NotViolate=[5075]
+Training Rule=[OverloadMethodsDeclarationOrder] Violate=[107] NotViolate=[5199]
+Training Rule=[ClassTypeParameterName] Violate=[2] NotViolate=[5304]
+Training Rule=[ParameterName] Violate=[16] NotViolate=[5290]
+Training Rule=[CommentsIndentation] Violate=[2] NotViolate=[5304]
+Training Rule=[MissingSwitchDefault] Violate=[8] NotViolate=[5298]
+Training Rule=[OneTopLevelClass] Violate=[20] NotViolate=[5286]
+Training Rule=[NoFinalizer] Violate=[2] NotViolate=[5304]
+DONE
+=> Elapsed time: [14954.4623] seconds for [postprocess_check_style]
+
+####################################### POSTPROCESS: DONE!!! #######################################
+
+Process finished with exit code 0

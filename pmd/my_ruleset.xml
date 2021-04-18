@@ -1,25 +1,828 @@
 <?xml version="1.0"?>
 
 <ruleset name="Custom Rules"
-    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
 
     <description>
-        My custom PMD rules
+        My PMD rules for code-quality-checker (45 rules)
     </description>
 
+    <!--********************************* Best Practices *********************************-->
 
-    <rule ref="category/java/codestyle.xml/ShortClassName" />
-    <rule ref="category/java/codestyle.xml/ShortMethodName" />
-    <rule ref="category/java/codestyle.xml/ShortVariable" />
-
-    <rule ref="category/java/design.xml/TooManyFields" />
-    <rule ref="category/java/design.xml/TooManyMethods" />
-
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables">
+        <properties>
+            <property name="foreachReassign" value="deny"/>
+            <property name="forReassign" value="deny"/>
+        </properties>
+    </rule>
     <!--
-        TODO: Include all the rules that will be evaluated
+    public class Foo {
+      private void foo() {
+        for (String s : listOfStrings()) {
+          s = s.trim(); // OK, when foreachReassign is "firstOnly" or "allow"
+          doSomethingWith(s);
+
+          s = s.toUpper(); // OK, when foreachReassign is "allow"
+          doSomethingElseWith(s);
+        }
+
+        for (int i=0; i < 10; i++) {
+          if (check(i)) {
+            i++; // OK, when forReassign is "skip" or "allow"
+          }
+
+          i = 5;  // OK, when forReassign is "allow"
+
+          doSomethingWith(i);
+        }
+      }
+    }
     -->
 
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters"/>
+    <!--
+    public class Foo {
+      private void foo(String bar) {
+        bar = "something else";
+      }
+    }
+    -->
+
+    <rule ref="category/java/bestpractices.xml/LooseCoupling"/>
+    <!--
+    import java.util.ArrayList;
+    import java.util.HashSet;
+
+    public class Bar {
+        // sub-optimal approach
+        private ArrayList<SomeType> list = new ArrayList<>();
+
+        public HashSet<SomeType> getFoo() {
+            return new HashSet<SomeType>();
+        }
+
+        // preferred approach
+        private List<SomeType> list = new ArrayList<>();
+
+        public Set<SomeType> getFoo() {
+            return new HashSet<SomeType>();
+        }
+    }
+    -->
+
+    <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
+    <!--
+    public class Foo {
+        void good() {
+            try{
+                Integer.parseInt("a");
+            } catch (Exception e) {
+                throw new Exception(e); // first possibility to create exception chain
+            }
+            try {
+                Integer.parseInt("a");
+            } catch (Exception e) {
+                throw (IllegalStateException)new IllegalStateException().initCause(e); // second possibility to create exception chain.
+            }
+        }
+        void bad() {
+            try{
+                Integer.parseInt("a");
+            } catch (Exception e) {
+                throw new Exception(e.getMessage());
+            }
+        }
+    }
+    -->
+
+
+
+
+    <!--********************************* Code Style *********************************-->
+    <rule ref="category/java/codestyle.xml/BooleanGetMethodName">
+        <properties>
+            <property name="checkParameterizedMethods" value="false"/>
+        </properties>
+    </rule>
+    <!--
+    public boolean getFoo();            // bad
+    public boolean isFoo();             // ok
+    public boolean getFoo(boolean bar); // ok, unless checkParameterizedMethods=true
+    -->
+
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+        <properties>
+            <property name="classPattern" value="[A-Z][a-zA-Z0-9]*"/>
+            <property name="abstractClassPattern" value="[A-Z][a-zA-Z0-9]*"/>
+            <property name="interfacePattern" value="[A-Z][a-zA-Z0-9]*"/>
+            <property name="enumPattern" value="[A-Z][a-zA-Z0-9]*"/>
+            <property name="annotationPattern" value="[A-Z][a-zA-Z0-9]*"/>
+            <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+(Utils?|Helper|Constants)"/>
+        </properties>
+    </rule>
+    <!--
+    // This is Pascal case, the recommended naming convention in Java
+    // Note that the default values of this rule don't allow underscores
+    // or accented characters in type names
+    public class FooBar {}
+
+    // You may want abstract classes to be named 'AbstractXXX',
+    // in which case you can customize the regex for abstract
+    // classes to 'Abstract[A-Z]\w+'
+    public abstract class Thing {}
+
+    // This class doesn't respect the convention, and will be flagged
+    public class Éléphant {}
+    -->
+
+    <rule ref="category/java/codestyle.xml/ConfusingTernary">
+        <properties>
+            <property name="ignoreElseIf" value="false"/>
+        </properties>
+    </rule>
+    <!--
+    boolean bar(int x, int y) {
+        return (x != y) ? diff : same;
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/ControlStatementBraces">
+        <properties>
+            <property name="checkIfElseStmt" value="true"/>
+            <property name="checkSingleIfStmt" value="true"/>
+            <property name="checkWhileStmt" value="true"/>
+            <property name="checkForStmt" value="true"/>
+            <property name="checkDoWhileStmt" value="true"/>
+            <property name="checkCaseStmt" value="false"/>
+            <property name="allowEmptyLoop" value="false"/>
+        </properties>
+    </rule>
+    <!--
+    while (true)    // not recommended
+      x++;
+
+    while (true) {  // preferred approach
+      x++;
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract"/>
+    <!--
+    public abstract class ShouldBeAbstract {
+        public Object couldBeAbstract() {
+            // Should be abstract method ?
+            return null;
+        }
+
+        public void couldBeAbstract() {
+        }
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/FieldDeclarationsShouldBeAtStartOfClass">
+        <properties>
+            <property name="ignoreEnumDeclarations" value="true"/>
+            <property name="ignoreAnonymousClassDeclarations" value="true"/>
+            <property name="ignoreInterfaceDeclarations" value="false"/>
+        </properties>
+    </rule>
+    <!--
+    public class HelloWorldBean {
+
+      // Field declared before methods / inner classes - OK
+      private String _thing;
+
+      public String getMessage() {
+        return "Hello World!";
+      }
+
+      // Field declared after methods / inner classes - avoid this
+      private String _fieldInWrongLocation;
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/FieldNamingConventions">
+        <properties>
+            <property name="publicConstantPattern" value="[A-Z][A-Z_0-9]*"/>
+            <property name="constantPattern" value="[A-Z][A-Z_0-9]*"/>
+            <property name="enumConstantPattern" value="[A-Z][A-Z_0-9]*"/>
+            <property name="finalFieldPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="staticFieldPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="defaultFieldPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="exclusions" value="serialVersionUID|serialPersistentFields"/>
+        </properties>
+    </rule>
+    <!--
+    class Foo {
+        int myField = 1; // This is in camel case, so it's ok
+        int my_Field = 1; // This contains an underscore, it's not ok by default
+                          // but you may allow it, or even require the "my_" prefix
+
+        final int FinalField = 1; // you may configure a different convention for final fields,
+                                  // e.g. here PascalCase: [A-Z][a-zA-Z0-9]*
+
+        interface Interface {
+            double PI = 3.14; // interface "fields" use the constantPattern property
+        }
+
+        enum AnEnum {
+            ORG, NET, COM; // These use a separate property but are set to ALL_UPPER by default
+        }
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions">
+        <properties>
+            <property name="methodParameterPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="finalMethodParameterPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="lambdaParameterPattern" value="[a-z][a-zA-Z0-9]*"/>
+            <property name="explicitLambdaParameterPattern" value="[a-z][a-zA-Z0-9]*"/>
+        </properties>
+    </rule>
+    <!--
+    class Foo {
+
+        abstract void bar(int myInt); // This is Camel case, so it's ok
+
+        void bar(int my_i) { // this will be reported
+
+        }
+
+        void lambdas() {
+
+            // lambdas parameters can be configured separately
+            Consumer<String> lambda1 = s_str -> { };
+
+            // lambda parameters with an explicit type can be configured separately
+            Consumer<String> lambda1 = (String str) -> { };
+
+        }
+
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/LinguisticNaming">
+        <properties>
+            <property name="ignoredAnnotations" value="java.lang.Override"/>
+            <property name="checkBooleanMethod" value="true"/>
+            <property name="checkGetters" value="true"/>
+            <property name="checkSetters" value="true"/>
+            <property name="checkPrefixedTransformMethods" value="true"/>
+            <property name="checkTransformMethods" value="false"/>
+            <property name="booleanMethodPrefixes" value="is|has|can|have|will|should"/>
+            <property name="transformMethodNames" value="to|as"/>
+            <property name="checkFields" value="true"/>
+            <property name="checkVariables" value="true"/>
+            <property name="booleanFieldPrefixes" value="is|has|can|have|will|should"/>
+        </properties>
+    </rule>
+    <!--
+    public class LinguisticNaming {
+        int isValid;    // the field name indicates a boolean, but it is an int.
+        boolean isTrue; // correct type of the field
+
+        void myMethod() {
+            int hasMoneyLocal;      // the local variable name indicates a boolean, but it is an int.
+            boolean hasSalaryLocal; // correct naming and type
+        }
+
+        // the name of the method indicates, it is a boolean, but the method returns an int.
+        int isValid() {
+            return 1;
+        }
+        // correct naming and return type
+        boolean isSmall() {
+            return true;
+        }
+
+        // the name indicates, this is a setter, but it returns something
+        int setName() {
+            return 1;
+        }
+
+        // the name indicates, this is a getter, but it doesn't return anything
+        void getName() {
+            // nothing to return?
+        }
+
+        // the name indicates, it transforms an object and should return the result
+        void toDataType() {
+            // nothing to return?
+        }
+        // the name indicates, it transforms an object and should return the result
+        void grapeToWine() {
+            // nothing to return?
+        }
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <property name="minimum" value="5"/>
+        </properties>
+    </rule>
+    <!--
+    public class Foo {
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/ShortMethodName">
+        <properties>
+            <property name="minimum" value="3"/>
+        </properties>
+    </rule>
+    <!--
+    public class ShortMethod {
+        public void a( int i ) { // Violation
+        }
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/ShortVariable">
+        <properties>
+            <property name="minimum" value="3"/>
+        </properties>
+    </rule>
+    <!--
+    public class Something {
+        private int q = 15;                         // field - too short
+        public static void main( String as[] ) {    // formal arg - too short
+            int r = 20 + q;                         // local var - too short
+            for (int i = 0; i < 10; i++) {          // not a violation (inside 'for' loop)
+                r += q;
+            }
+            for (Integer i : numbers) {             // not a violation (inside 'for-each' loop)
+                r += q;
+            }
+        }
+    }
+    -->
+
+    <rule ref="category/java/codestyle.xml/UseUnderscoresInNumericLiterals">
+        <properties>
+            <property name="acceptableDecimalLength" value="4"/>
+        </properties>
+    </rule>
+    <!--
+    public class Foo {
+        private int num = 1000000; // should be 1_000_000
+    }
+    -->
+
+
+
+
+    <!--********************************* Design *********************************-->
+    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
+        <properties>
+            <property name="problemDepth" value="3"/>
+        </properties>
+    </rule>
+    <!--
+    public class Foo {
+      public void bar(int x, int y, int z) {
+        if (x>y) {
+          if (y>z) {
+            if (z==x) {
+             // !! too deep
+            }
+          }
+        }
+      }
+    }
+    -->
+
+    <rule ref="category/java/design.xml/CollapsibleIfStatements"/>
+    <!--
+    void bar() {
+        if (x) {            // original implementation
+            if (y) {
+                // do stuff
+            }
+        }
+    }
+
+    void bar() {
+        if (x && y) {        // optimized implementation
+            // do stuff
+        }
+    }
+    -->
+
+    <rule ref="category/java/design.xml/CouplingBetweenObjects">
+        <properties>
+            <property name="threshold" value="20"/>
+        </properties>
+    </rule>
+    <!--
+    import com.Blah;
+    import org.Bar;
+    import org.Bardo;
+
+    public class Foo {
+        private Blah var1;
+        private Bar var2;
+
+        //followed by many imports of unique objects
+        ObjectC doWork() {
+            Bardo var55;
+            ObjectA var44;
+            ObjectZ var93;
+            return something();
+        }
+    }
+    -->
+
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="classReportLevel" value="80"/>
+            <property name="methodReportLevel" value="10"/>
+            <property name="cycloOptions" value=""/>
+        </properties>
+    </rule>
+    <!--
+    class Foo {
+      void baseCyclo() {                // Cyclo = 1
+        highCyclo();
+      }
+
+      void highCyclo() {                // Cyclo = 10: reported!
+        int x = 0, y = 2;
+        boolean a = false, b = true;
+
+        if (a && (y == 1 ? b : true)) { // +3
+          if (y == x) {                 // +1
+            while (true) {              // +1
+              if (x++ < 20) {           // +1
+                break;                  // +1
+              }
+            }
+          } else if (y == t && !d) {    // +2
+            x = a ? y : x;              // +1
+          } else {
+            x = 2;
+          }
+        }
+      }
+    }
+    -->
+
+    <rule ref="category/java/design.xml/ExcessiveMethodLength">
+        <properties>
+            <property name="minimum" value="100.0"/>
+        </properties>
+    </rule>
+    <!--
+    public void doSomething() {
+        System.out.println("Hello world!");
+        System.out.println("Hello world!");
+        // 98 copies omitted for brevity.
+    }
+    -->
+
+    <rule ref="category/java/design.xml/ExcessiveParameterList">
+        <properties>
+            <property name="minimum" value="10.0"/>
+        </properties>
+    </rule>
+    <!--
+    public void addPerson(      // too many arguments liable to be mixed up
+        int birthYear, int birthMonth, int birthDate, int height, int weight, int ssn) {
+
+        . . . .
+    }
+
+    public void addPerson(      // preferred approach
+        Date birthdate, BodyMeasurements measurements, int ssn) {
+
+        . . . .
+    }
+    -->
+
+    <rule ref="category/java/design.xml/ExcessivePublicCount">
+        <properties>
+            <property name="minimum" value="45.0"/>
+        </properties>
+    </rule>
+    <!--
+    public class Foo {
+        public String value;
+        public Bar something;
+        public Variable var;
+        // [... more more public attributes ...]
+
+        public void doWork() {}
+        public void doMoreWork() {}
+        public void doWorkAgain() {}
+        // [... more more public methods ...]
+    }
+    -->
+
+    <rule ref="category/java/design.xml/GodClass"/>
+    <!--
+    The God Class rule detects the God Class design flaw using metrics. God classes do too many things, are very big and overly complex.
+    They should be split apart to be more object-oriented. The rule uses the detection strategy described in "Object-Oriented Metrics in Practice".
+    The violations are reported against the entire class.
+    -->
+
+    <rule ref="category/java/design.xml/LogicInversion"/>
+    <!--
+    public boolean bar(int a, int b) {
+
+        if (!(a == b)) { // use !=
+             return false;
+         }
+
+        if (!(a < b)) { // use >=
+             return false;
+        }
+
+        return true;
+    }
+    -->
+
+    <rule ref="category/java/design.xml/SimplifiedTernary"/>
+    <!--
+    public class Foo {
+        public boolean test() {
+            return condition ? true : something(); // can be as simple as return condition || something();
+        }
+
+        public void test2() {
+            final boolean value = condition ? false : something(); // can be as simple as value = !condition && something();
+        }
+
+        public boolean test3() {
+            return condition ? something() : true; // can be as simple as return !condition || something();
+        }
+
+        public void test4() {
+            final boolean otherValue = condition ? something() : false; // can be as simple as condition && something();
+        }
+    }
+    -->
+
+    <rule ref="category/java/design.xml/SimplifyBooleanExpressions"/>
+    <!--
+    public class Bar {
+      // can be simplified to
+      // bar = isFoo();
+      private boolean bar = (isFoo() == true);
+
+      public isFoo() { return false;}
+    }
+    -->
+
+    <rule ref="category/java/design.xml/SimplifyBooleanReturns"/>
+    <!--
+    public boolean isBarEqualTo(int x) {
+        if (bar == x) {      // this bit of code...
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isBarEqualTo(int x) {
+        return bar == x;    // can be replaced with this
+    }
+    -->
+
+    <rule ref="category/java/design.xml/SingularField">
+        <properties>
+            <property name="ignoredAnnotations"
+                      value="lombok.Setter|lombok.Getter|lombok.Builder|lombok.Data|lombok.RequiredArgsConstructor|lombok.AllArgsConstructor|lombok.Value|lombok.NoArgsConstructor|lombok.experimental.Delegate|lombok.EqualsAndHashCode"/>
+            <property name="checkInnerClasses" value="false"/>
+            <property name="disallowNotAssignment" value="false"/>
+        </properties>
+    </rule>
+    <!--
+    public class Foo {
+        private int x;  // no reason to exist at the Foo instance level
+        public void foo(int y) {
+         x = y + 5;
+         return x;
+        }
+    }
+    -->
+
+    <rule ref="category/java/design.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="15"/>
+        </properties>
+    </rule>
+    <!--
+    public class Person {   // too many separate fields
+       int birthYear;
+       int birthMonth;
+       int birthDate;
+       float height;
+       float weight;
+    }
+
+    public class Person {   // this is more manageable
+       Date birthDate;
+       BodyMeasurements measurements;
+    }
+    -->
+
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="10"/>
+        </properties>
+    </rule>
+    <!--
+    A class with too many methods is probably a good suspect for refactoring, in order to reduce its complexity and find a way to have more fine grained objects.
+    -->
+
+    <rule ref="category/java/design.xml/UseObjectForClearerAPI"/>
+    <!--
+    public class MyClass {
+        public void connect(String username,
+            String pssd,
+            String databaseName,
+            String databaseAdress)
+            // Instead of those parameters object
+            // would ensure a cleaner API and permit
+            // to add extra data transparently (no code change):
+            // void connect(UserData data);
+        {
+
+        }
+    }
+    -->
+
+
+
+
+    <!--********************************* Error Prone *********************************-->
+    <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+        <properties>
+            <property name="separator" value=","/>
+            <property name="maxDuplicateLiterals" value="4"/>
+            <property name="minimumLength" value="3"/>
+            <property name="skipAnnotations" value="false"/>
+            <property name="exceptionList" value=""/>
+        </properties>
+    </rule>
+    <!--
+    private void bar() {
+         buz("Howdy");
+         buz("Howdy");
+         buz("Howdy");
+         buz("Howdy");
+    }
+    private void buz(String x) {}
+    -->
+
+    <rule ref="category/java/errorprone.xml/AvoidFieldNameMatchingMethodName"/>
+    <!--
+    public class Foo {
+        Object bar;
+        // bar is data or an action or both?
+        void bar() {
+        }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/AvoidLiteralsInIfCondition">
+        <properties>
+            <property name="ignoreMagicNumbers" value="-1,0"/>
+            <property name="ignoreExpressions" value="true"/>
+        </properties>
+    </rule>
+    <!--
+    private static final int MAX_NUMBER_OF_REQUESTS = 10;
+
+    public void checkRequests() {
+
+        if (i == 10) {                        // magic number, buried in a method
+          doSomething();
+        }
+
+        if (i == MAX_NUMBER_OF_REQUESTS) {    // preferred approach
+          doSomething();
+        }
+
+        if (aString.indexOf('.') != -1) {}     // magic number -1, by default ignored
+        if (aString.indexOf('.') >= 0) { }     // alternative approach
+
+        if (aDouble > 0.0) {}                  // magic number 0.0
+        if (aDouble >= Double.MIN_VALUE) {}    // preferred approach
+
+        // with rule property "ignoreExpressions" set to "false"
+        if (i == pos + 5) {}  // violation: magic number 5 within an (additive) expression
+        if (i == pos + SUFFIX_LENGTH) {} // preferred approach
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock">
+        <properties>
+            <property name="allowCommentedBlocks" value="false"/>
+            <property name="allowExceptionNameRegex" value="^(ignored|expected)$"/>
+        </properties>
+    </rule>
+    <!--
+    public void doSomething() {
+        try {
+            FileInputStream fis = new FileInputStream("/tmp/bugger");
+        } catch (IOException ioe) {
+            // not good
+        }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/EmptyIfStmt"/>
+    <!--
+    public class Foo {
+     void bar(int x) {
+      if (x == 0) {
+       // empty!
+      }
+     }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/EmptyStatementBlock"/>
+    <!--
+    public class Foo {
+
+       private int _bar;
+
+       public void setBar(int bar) {
+          { _bar = bar; } // Why not?
+          {} // But remove this.
+       }
+
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/EmptySwitchStatements"/>
+    <!--
+    public void bar() {
+        int x = 2;
+        switch (x) {
+            // once there was code here
+            // but it's been commented out or something
+        }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/EmptyTryBlock"/>
+    <!--
+    public class Foo {
+        public void bar() {
+            try {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/EmptyWhileStmt"/>
+    <!--
+    void bar(int a, int b) {
+        while (a == b) {
+            // empty!
+        }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/IdempotentOperations"/>
+    <!--
+    public class Foo {
+     public void bar() {
+      int x = 2;
+      x = x;
+     }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
+    <!--
+    public class JumbledIncrementerRule1 {
+        public void foo() {
+            for (int i = 0; i < 10; i++) {          // only references 'i'
+                for (int k = 0; k < 20; i++) {      // references both 'i' and 'k'
+                    System.out.println("Hello");
+                }
+            }
+        }
+    }
+    -->
+
+    <rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
+    <!--
+    public class Foo {
+        public void close() {
+            if (true) {        // fixed conditional, not recommended
+                // ...
+            }
+        }
+    }
+    -->
 
 </ruleset>
