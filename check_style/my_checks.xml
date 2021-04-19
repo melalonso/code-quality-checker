@@ -1,0 +1,660 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+          "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+
+    Checkstyle is very configurable. Be sure to read the documentation at
+    http://checkstyle.org (or in your downloaded distribution).
+
+    To completely disable a check, just comment it out or delete it from the file.
+    To suppress certain violations please review suppression filters.
+
+    Author: Melvin Elizondo Pérez
+
+    ========================================================================
+
+    Many checks are submodules of the TreeWalker FileSetCheck module. The TreeWalker operates by separately transforming
+    each of the Java source files into an abstract syntax tree and then handing the result over to each of its submodules
+    which in turn have a look at certain aspects of the tree.Every node of the syntax tree has a token.
+
+    Every node of the syntax tree has a token. A visit to a node during the traversal triggers all Checks that are
+    configured for its token. For example, if Check MethodLength has been configured as a submodule of TreeWalker,
+    then a visit to a node with a "method" (METHOD_DEF) or a "constructor" (CTOR_DEF) definition token triggers MethodLength to check the number
+    of lines of the node's code block.
+
+    You specify the trigger tokens for a Check with property tokens. The value of tokens is a list that denotes a subset
+    of the Check's tokens, as in the following element that configures Check MethodLength to check the number of lines of methods only:
+
+    <module name="MethodLength">
+      <property name="tokens" value="METHOD_DEF"/>
+    </module>
+
+    To apply particular properties to different subsets of tokens for a Check, repeat the Check. For example, to check that
+    the length of each method is at most 150 lines (the default value of MethodLength property max) and the length of
+    each constructor is at most 60 lines, include the following in the TreeWalker configuration:
+
+    <module name="MethodLength">
+      <property name="tokens" value="METHOD_DEF"/>
+    </module>
+    <module name="MethodLength">
+      <property name="tokens" value="CTOR_DEF"/>
+      <property name="max" value="60"/>
+    </module>
+
+
+    Example:
+    <module name="Checker">
+      <module name="JavadocPackage"/>
+      <module name="TreeWalker">
+        <module name="AvoidStarImport"/>
+        <module name="ConstantName"/>
+        <module name="EmptyBlock"/>
+      </module>
+    </module>
+
+
+    Properties of a module control how the module performs its task.
+
+    <module name="MethodLength">
+      <property name="max" value="60"/>
+    </module>
+
+    Also, properties are inherited in the module hierarchy. These features make it easy to define one property value
+    that applies to many modules.
+
+    <module name="Checker">
+      <module name="JavadocPackage"/>
+      <module name="TreeWalker">
+        <property name="tabWidth" value="4"/>
+        <module name="AvoidStarImport"/>
+        <module name="ConstantName"/>
+        ...
+      </module>
+    </module>
+
+
+    => Custom Messages
+
+    As of Checkstyle 5 all checks can be configured to report custom, configuration specific messages instead of the
+    Checkstyle default messages. This can be useful in cases where the check message should reference corresponding
+    sections in a coding style document or the default is too generic for developers to understand.
+
+    <module name="MemberName">
+      <property name="format" value="^m[a-zA-Z0-9]*$"/>
+      <message key="name.invalidPattern"
+       value="Member ''{0}'' must start with a lowercase ''m'' (checked pattern ''{1}'')."
+       />
+    </module>
+-->
+
+<module name = "Checker">
+  <property name="charset" value="UTF-8"/>
+
+  <property name="severity" value="warning"/>
+
+  <property name="fileExtensions" value="java"/>
+
+  <!-- Excludes all 'module-info.java' files              -->
+  <!-- See https://checkstyle.org/config_filefilters.html -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="module\-info\.java$"/>
+  </module>
+
+
+  <module name="TreeWalker">
+
+    <!-- ================================ Block Checks ================================ -->
+
+    <module name="EmptyBlock">
+      <property name="option" value="statement"/>
+      <property name="tokens" value="LITERAL_WHILE , LITERAL_TRY , LITERAL_FINALLY , LITERAL_DO , LITERAL_IF ,
+      LITERAL_ELSE , LITERAL_FOR , INSTANCE_INIT , STATIC_INIT , LITERAL_SWITCH , LITERAL_SYNCHRONIZED"/>
+    </module>
+    <!--
+    Checks for empty blocks. This check does not validate sequential blocks.
+    Sequential blocks won't be checked. Also, no violations for fallthrough:
+
+    switch (a) {
+      case 1:                          // no violation
+      case 2:                          // no violation
+      case 3: someMethod(); { }        // no violation
+      default: break;
+    }
+    -->
+
+    <module name="EmptyCatchBlock">
+      <property name="exceptionVariableName" value="^$"/>
+      <property name="commentFormat" value=".*"/>
+    </module>
+    <!--
+    try {
+      throw new RuntimeException();
+    } catch (RuntimeException expected) {
+    } // violation
+
+    try {
+      throw new RuntimeException();
+    } catch (RuntimeException ignore) {
+      // no handling
+    } // ok, catch block has comment
+
+    try {
+      throw new RuntimeException();
+    } catch (RuntimeException o) {
+    } // violation
+
+    try {
+      throw new RuntimeException();
+    } catch (RuntimeException ex) {
+      // This is expected
+    } // ok
+    -->
+
+
+
+    <!-- ================================ Coding ================================ -->
+
+    <module name="FallThrough">
+      <property name="checkLastCaseGroup" value="false"/>
+      <property name="reliefPattern" value="falls?[ -]?thr(u|ough)"/>
+    </module>
+    <!--
+    public void foo() throws Exception {
+      int i = 0;
+      while (i >= 0) {
+        switch (i) {
+          case 1:
+            i++;
+          case 2: // violation, previous case contains code but lacks
+                  // break, return, throw or continue statement
+            i++;
+            break;
+          case 3: // OK
+            i++;
+            return;
+          case 4: // OK
+            i++;
+            throw new Exception();
+          case 5: // OK
+            i++;
+            continue;
+          case 6: // OK
+          case 7: // Previous case: OK, case does not contain code
+                  // This case: OK, by default the last case might not have statement
+                  // that transfer control
+            i++;
+
+        }
+      }
+    }
+    -->
+
+    <module name="MagicNumber">
+      <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+      <property name="ignoreHashCodeMethod" value="false"/>
+      <property name="ignoreAnnotation" value="false"/>
+      <property name="ignoreFieldDeclaration" value="false"/>
+      <property name="ignoreAnnotationElementDefaults" value="true"/>
+      <property name="constantWaiverParentToken" value="	TYPECAST , METHOD_CALL , EXPR , ARRAY_INIT , UNARY_MINUS ,
+      UNARY_PLUS , ELIST , STAR , ASSIGN , PLUS , MINUS , DIV , LITERAL_NEW"/>
+      <property name="tokens" value="NUM_DOUBLE , NUM_FLOAT , NUM_INT , NUM_LONG"/>
+    </module>
+    <!--
+    @MyAnnotation(6) // violation
+    class MyClass {
+      private field = 7; // violation
+
+      void foo() {
+        int i = i + 1; // no violation
+        int j = j + 8; // violation
+      }
+
+      public int hashCode() {
+        return 10;    // violation
+      }
+    }
+    @interface anno {
+      int value() default 10; // no violation
+    }
+    -->
+
+    <module name="MultipleStringLiterals">
+      <property name="allowedDuplicates" value="1"/>
+      <property name="ignoreStringsRegexp" value='^""$'/>
+      <property name="ignoreOccurrenceContext" value="ANNOTATION"/>
+    </module>
+
+
+    <module name="NestedForDepth">
+      <property name="max" value="1"/>
+    </module>
+    <!--
+    for(int i=0; i<10; i++) {
+        for(int j=0; j<i; j++) {
+            for(int k=0; k<j; k++) { // violation, max allowed nested loop number is 1
+            }
+        }
+    }
+
+    for(int i=0; i<10; i++) {
+        for(int j=0; j<i; j++) { // ok
+        }
+    }
+    -->
+
+    <module name="NestedIfDepth">
+      <property name="max" value="1"/>
+    </module>
+    <!--
+    if (true) {
+        if (true) {} // OK
+        else {}
+    }
+
+    if (true) {
+        if (true) {
+            if (true) { // violation, nested if-else depth is 2 (max allowed is 1)
+            }
+        }
+    }
+    -->
+
+
+    <module name="NestedTryDepth">
+      <property name="max" value="1"/>
+    </module>
+    <!--
+    try {
+        try {
+            try { // violation, current depth is 2, default max allowed depth is 1
+            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+        }
+    } catch (Exception e) {
+    }
+
+    try {
+        try { // OK, current depth is 1, default max allowed depth is also 1
+        } catch (Exception e) {
+        }
+    } catch (Exception e) {
+    }
+    -->
+
+    <module name="OneStatementPerLine">
+      <property name="treatTryResourcesAsStatement" value="false"/>
+    </module>
+    <!--
+    //Each line causes violation:
+    int var1; int var2;
+    var1 = 1; var2 = 2;
+    int var1 = 1; int var2 = 2;
+    var1++; var2++;
+    Object obj1 = new Object(); Object obj2 = new Object();
+    import java.io.EOFException; import java.io.BufferedReader;
+    ;; //two empty statements on the same line.
+
+    //Multi-line statements:
+    int var1 = 1
+    ; var2 = 2; //violation here
+    int o = 1, p = 2,
+    r = 5; int t; //violation here
+    -->
+
+    <module name="OverloadMethodsDeclarationOrder"/>
+    <!--
+    public void foo(int i) {} // OK
+    public void foo(String s) {} // OK
+    public void notFoo() {} // violation. Have to be after foo(String s, int i)
+    public void foo(int i, String s) {}
+    public void foo(String s, int i) {}
+    -->
+
+    <module name="ReturnCount">
+      <property name="max" value="2"/>
+      <property name="maxForVoid" value="1"/>
+      <property name="format" value="^equals$"/>
+      <property name="tokens" value="CTOR_DEF, METHOD_DEF, LAMBDA"/>
+    </module>
+
+    <module name="SimplifyBooleanExpression"/>
+    <!--
+    public class Test {
+
+      public void bar() {
+
+        boolean a, b;
+        Foo c, d, e;
+
+        if (!false) {}; // violation, can be simplified to true
+
+        if (a == true) {}; // violation, can be simplified to a
+        if (a == b) {}; // OK
+        if (a == false) {}; // violation, can be simplified to !a
+        if (!(a != true)) {}; // violation, can be simplified to a
+
+        e = (a || b) ? c : d; // OK
+        e = (a || false) ? c : d; // violation, can be simplified to a
+        e = (a && b) ? c : d; // OK
+
+      }
+
+    }
+    -->
+
+    <module name="SimplifyBooleanReturn"/>
+    <!--
+    public class Test {
+
+     private boolean cond;
+     private Foo a;
+     private Foo b;
+
+     public boolean check1() {
+      if (cond) { // violation, can be simplified
+        return true;
+      }
+      else {
+        return false;
+      }
+     }
+
+     // Ok, simplified version of check1()
+     public boolean check2() {
+      return cond;
+     }
+
+     // violations, can be simplified
+     public boolean check3() {
+      if (cond == true) { // can be simplified to "if (cond)"
+        return false;
+      }
+      else {
+        return true; // can be simplified to "return !cond"
+      }
+     }
+
+     // Ok, can be simplified but doesn't return a Boolean
+     public Foo choose1() {
+      if (cond) {
+        return a;
+      }
+      else {
+        return b;
+      }
+     }
+
+     // Ok, simplified version of choose1()
+     public Foo choose2() {
+      return cond ? a: b;
+     }
+
+    }
+    -->
+
+
+
+    <!-- ================================ Metrics ================================ -->
+
+    <module name="BooleanExpressionComplexity">
+      <property name="max" value="3"/>
+      <property name="tokens" value="LAND,BAND,LOR,BOR,BXOR"/>
+    </module>
+    <!--
+    public class Test
+    {
+      public static void main(String ... args)
+      {
+        boolean a = true;
+        boolean b = false;
+
+        boolean c = (a & b) | (b ^ a);       // OK, 1(&) + 1(|) + 1(^) = 3 (max allowed 3)
+
+        boolean d = (a & b) ^ (a || b) | a;  // violation, 1(&) + 1(^) + 1(||) + 1(|) = 4
+      }
+    }
+    -->
+
+    <module name="CyclomaticComplexity">
+      <property name="max" value="10"/>
+      <property name="switchBlockAsSingleDecisionPoint" value="false"/>
+      <property name="tokens" value="LITERAL_WHILE,LITERAL_DO,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_CASE,LITERAL_CATCH,QUESTION,LAND,LOR"/>
+    </module>
+    <!--
+    class CyclomaticComplexity {
+      // Cyclomatic Complexity = 11
+      int a, b, c, d, n;
+      public void foo() { // 1, function declaration
+        if (a == 1) { // 2, if
+          fun1();
+        } else if (a == b // 3, if
+          && a == c) { // 4, && operator
+          if (c == 2) { // 5, if
+            fun2();
+          }
+        } else if (a == d) { // 6, if
+          try {
+            fun4();
+          } catch (Exception e) { // 7, catch
+          }
+        } else {
+          switch(n) {
+            case 1: // 8, case
+              fun1();
+              break;
+            case 2: // 9, case
+              fun2();
+              break;
+            case 3: // 10, case
+              fun3();
+              break;
+            default:
+              break;
+          }
+        }
+        d = a < 0 ? -1 : 1; // 11, ternary operator
+      }
+    }
+    -->
+
+
+    <!-- ================================ Miscellaneous ================================ -->
+
+    <module name="Indentation">
+      <property name="basicOffset" value="4"/>
+      <property name="braceAdjustment" value="0"/>
+      <property name="caseIndent" value="4"/>
+      <property name="throwsIndent" value="4"/>
+      <property name="arrayInitIndent" value="4"/>
+      <property name="lineWrappingIndentation" value="4"/>
+      <property name="forceStrictCondition" value="false"/>
+    </module>
+    <!--
+    class Test {
+        String field;               // basicOffset
+        int[] arr = {               // basicOffset
+            5,                      // arrayInitIndent
+            6 };                    // arrayInitIndent
+        void bar() throws Exception // basicOffset
+        {                           // braceAdjustment
+            foo();                  // basicOffset
+        }                           // braceAdjustment
+        void foo() {                // basicOffset
+            if ((cond1 && cond2)    // basicOffset
+                      || (cond3 && cond4)    // lineWrappingIndentation, forceStrictCondition
+                      ||!(cond5 && cond6)) { // lineWrappingIndentation, forceStrictCondition
+                field.doSomething()          // basicOffset
+                    .doSomething()           // lineWrappingIndentation and forceStrictCondition
+                    .doSomething( c -> {     // lineWrappingIndentation and forceStrictCondition
+                        return c.doSome();   // basicOffset
+                    });
+            }
+        }
+        void fooCase()                // basicOffset
+            throws Exception {        // throwsIndent
+            switch (field) {          // basicOffset
+                case "value" : bar(); // caseIndent
+            }
+        }
+    }
+    -->
+
+    <module name="UncommentedMain">
+      <property name="excludedClasses" value="^$"/>
+    </module>
+    <!--
+    public class Game {
+       public static void main(String... args){}   // violation
+    }
+
+    public class Main {
+       public static void main(String[] args){}   // violation
+    }
+
+    public class Launch {
+       //public static void main(String[] args){} // OK
+    }
+
+    public class Start {
+       public void main(){}                       // OK
+    }
+
+    public record MyRecord1 {
+        public void main(){}                       // violation
+    }
+
+    public record MyRecord2 {
+        //public void main(){}                     // OK
+    }
+    -->
+
+
+
+
+    <!-- ================================ Naming Conventions ================================ -->
+
+    <module name="ConstantName">
+      <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+      <property name="applyToPublic" value="true"/>
+      <property name="applyToProtected" value="true"/>
+      <property name="applyToPackage" value="true"/>
+      <property name="applyToPrivate" value="true"/>
+    </module>
+    <!--
+    class MyClass {
+      public final static int FIRST_CONSTANT1 = 10; // OK
+      protected final static int SECOND_CONSTANT2 = 100; // OK
+      final static int third_Constant3 = 1000; // violation, name 'third_Constant3' must
+                                              // match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'
+      private final static int fourth_Const4 = 50; // violation, name 'fourth_Const4' must match
+                                                    // pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'
+    }
+    -->
+
+    <module name="IllegalIdentifierName">
+      <property name="format" value="(?i)^(?!(record|yield|var|permits|sealed|_)$).+$"/>
+      <property name="tokens" value="CLASS_DEF,INTERFACE_DEF,ENUM_DEF,ANNOTATION_DEF,ANNOTATION_FIELD_DEF,PARAMETER_DEF,
+      VARIABLE_DEF,METHOD_DEF,ENUM_CONSTANT_DEF,PATTERN_VARIABLE_DEF,RECORD_DEF,RECORD_COMPONENT_DEF"/>
+    </module>
+    <!--
+    public class TestClass {
+        public static void main(String... args) {
+            var var = 4; // violation, "var" should not be used as an identifier.
+            int record = 15; // violation, "record" should not be used as an identifier.
+            String yield = "yield"; // violation, "yield" should not be used as an identifier.
+
+            record Record // violation, "Record" should not be used as an identifier.
+            (Record record) { // violation, "record" should not be used as an identifier.
+            }
+
+            String yieldString = "yieldString"; // ok, part of another word
+            record MyRecord(){} // ok, part of another word
+            var variable = 2; // ok, part of another word
+            String _; // violation, underscore should not be used as an identifier.
+        }
+    }
+    -->
+
+    <module name="MethodName">
+       <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+       <property name="allowClassName" value="false"/>
+       <property name="applyToPublic" value="true"/>
+       <property name="applyToProtected" value="true"/>
+       <property name="applyToPackage" value="true"/>
+       <property name="applyToPrivate" value="true"/>
+    </module>
+    <!--
+    class MyClass {
+      public void firstMethod1() {} // OK
+      protected void secondMethod() {} // OK
+      private void ThirdMethod() {} // violation, method name must match to the
+                                    // default pattern '^[a-z][a-zA-Z0-9]*$'
+      public void fourth_Method4() {} // violation, method name must match to the
+                                     // default pattern '^[a-z][a-zA-Z0-9]*$'
+    }
+    -->
+
+
+    <module name="ParameterName">
+      <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+      <property name="ignoreOverridden" value="false"/>
+      <property name="accessModifiers" value="public, protected, package, private"/>
+    </module>
+    <!--
+    class MyClass {
+      void method1(int v1) {} // OK
+      void method2(int V2) {} // violation, name 'V2' must match pattern '^[a-z][a-zA-Z0-9]*$'
+    }
+    -->
+
+
+
+    <!-- ================================ Size Violations ================================ -->
+
+    <module name="MethodCount">
+      <property name="maxTotal" value="100"/>
+      <property name="maxPrivate" value="100"/>
+      <property name="maxPackage" value="100"/>
+      <property name="maxProtected" value="100"/>
+      <property name="maxPublic" value="100"/>
+      <property name="tokens" value="CLASS_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,ANNOTATION_DEF,RECORD_DEF"/>
+    </module>
+    <!--
+    public class ExampleClass {
+      public enum Colors {
+        RED, GREEN, YELLOW;
+
+        public String getRGB() { ... } // NOT counted towards ExampleClass
+      }
+
+      public void example() { // counted towards ExampleClass
+        Runnable r = (new Runnable() {
+          public void run() { ... } // NOT counted towards ExampleClass, won't produce any violations
+        });
+      }
+
+      public static class InnerExampleClass {
+        protected void example2() { ... } // NOT counted towards ExampleClass,
+                                       // but counted towards InnerExampleClass
+      }
+    }
+    -->
+
+    <module name="MethodLength">
+      <property name="max" value="150"/>
+      <property name="countEmpty" value="true"/>
+      <property name="tokens" value="METHOD_DEF,CTOR_DEF,COMPACT_CTOR_DEF"/>
+    </module>
+
+    <module name="ParameterNumber">
+      <property name="max" value="7"/>
+      <property name="ignoreOverriddenMethods" value="false"/>
+      <property name="tokens" value="METHOD_DEF,CTOR_DEF"/>
+    </module>
+
+  </module>
+
+</module>
